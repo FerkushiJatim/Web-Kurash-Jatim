@@ -1,0 +1,37 @@
+name: web_kurash_jatim
+description: "Portal Resmi & Sistem Manajemen Konten Kurash Jawa Timur"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  crypto: ^3.0.3
+  firebase_core: ^3.9.0
+  cloud_firestore: ^5.6.1
+  go_router: ^14.6.0
+  provider: ^6.1.2
+  http: ^1.4.0
+  intl: ^0.20.0
+  google_fonts: ^6.2.1
+  web: ^1.1.1
+  font_awesome_flutter: ^11.0.0
+  url_launcher: ^6.3.2
+  firebase_storage: ^12.4.10
+  file_picker: ^11.0.2
+  syncfusion_flutter_pdfviewer: ^33.2.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - lib/assets/logo-kurash-jatim.png
