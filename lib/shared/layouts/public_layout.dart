@@ -17,24 +17,30 @@ class PublicLayout extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            Container(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 24,
+                bottom: 24,
+                left: 20,
+                right: 20,
+              ),
               decoration: BoxDecoration(
                 color: context.colors.surfaceElevated,
                 border: Border(bottom: BorderSide(color: context.colors.borderColor)),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
+              child: Row(
                 children: [
-                  Image.asset('lib/assets/logo-kurash-jatim.png', height: 48),
-                  const SizedBox(height: 12),
-                  Text(
-                    'KURASH JATIM',
-                    style: TextStyle(
-                      color: context.colors.primaryBlue,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1,
+                  Image.asset('lib/assets/logo-kurash-jatim.png', height: 44),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'KURASH JATIM',
+                      style: TextStyle(
+                        color: context.colors.primaryBlue,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                      ),
                     ),
                   ),
                 ],

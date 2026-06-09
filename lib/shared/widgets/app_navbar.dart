@@ -18,11 +18,12 @@ class AppNavbar extends StatelessWidget {
         color: context.colors.surfaceDark,
         border: Border(bottom: BorderSide(color: context.colors.borderColor, width: 1)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 32),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final isMobile = constraints.maxWidth < 800;
-          return Row(
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 32),
+            child: Row(
             children: [
               if (isMobile) ...[
                 IconButton(
