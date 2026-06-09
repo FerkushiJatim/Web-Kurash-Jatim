@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../app/theme.dart';
 import '../../providers/turnamen_provider.dart';
 import '../../data/models/turnamen_model.dart';
@@ -299,7 +300,7 @@ class _TurnamenPageState extends State<TurnamenPage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(bottom: 24.0),
+                  margin: const EdgeInsets.only(bottom: 12.0),
                   decoration: BoxDecoration(
                     border: Border.all(color: context.colors.borderColor),
                     borderRadius: BorderRadius.circular(12),
@@ -329,6 +330,24 @@ class _TurnamenPageState extends State<TurnamenPage> {
                     ),
                   ),
                 ),
+                Text(
+                  'Tidak dapat melihat pratinjau file? (Ukuran mungkin terlalu besar)',
+                  style: TextStyle(color: context.colors.textMuted, fontSize: 13, fontStyle: FontStyle.italic),
+                ),
+                SizedBox(height: 8),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    if (lampiran.url.isNotEmpty) {
+                      final url = Uri.parse(lampiran.url);
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url);
+                      }
+                    }
+                  },
+                  icon: Icon(Icons.download),
+                  label: Text('Download PDF'),
+                ),
+                SizedBox(height: 32),
               ],
             );
           }),

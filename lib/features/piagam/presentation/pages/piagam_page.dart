@@ -357,7 +357,12 @@ class _PiagamPageState extends State<PiagamPage> {
             ),
           ),
         ),
-        SizedBox(height: 16),
+        SizedBox(height: 12),
+        Text(
+          'Tidak dapat melihat pratinjau file? (Ukuran mungkin terlalu besar)',
+          style: TextStyle(color: context.colors.textMuted, fontSize: 13, fontStyle: FontStyle.italic),
+        ),
+        SizedBox(height: 8),
         ElevatedButton.icon(
           onPressed: () async {
             if (piagam.pdfUrl.isNotEmpty) {
