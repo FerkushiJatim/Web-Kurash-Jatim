@@ -2,7 +2,6 @@ class Event {
   final String id;
   final String judul;
   final String kategori;
-  final String tipe;
   final DateTime tanggalMulai;
   final DateTime tanggalSelesai;
   final String lokasi;
@@ -14,7 +13,6 @@ class Event {
     required this.id,
     required this.judul,
     required this.kategori,
-    required this.tipe,
     required this.tanggalMulai,
     required this.tanggalSelesai,
     required this.lokasi,
@@ -28,7 +26,6 @@ class Event {
       id: json['id'] as String,
       judul: json['judul'] as String,
       kategori: json['kategori'] as String,
-      tipe: json['tipe'] as String? ?? 'Event',
       tanggalMulai: DateTime.parse(json['tanggal_mulai'] as String),
       tanggalSelesai: DateTime.parse(json['tanggal_selesai'] as String),
       lokasi: json['lokasi'] as String,
@@ -43,7 +40,6 @@ class Event {
       'id': id,
       'judul': judul,
       'kategori': kategori,
-      'tipe': tipe,
       'tanggal_mulai': tanggalMulai.toIso8601String(),
       'tanggal_selesai': tanggalSelesai.toIso8601String(),
       'lokasi': lokasi,

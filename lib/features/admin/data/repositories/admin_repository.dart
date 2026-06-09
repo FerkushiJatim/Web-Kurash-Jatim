@@ -6,6 +6,7 @@ import '../../../berita/data/models/berita_model.dart';
 
 class AdminRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get firestore => _firestore;
 
   AdminRepository(dynamic apiClient); // Keep constructor signature if needed, or we can just ignore apiClient
 
@@ -53,17 +54,47 @@ class AdminRepository {
   Future<Turnamen> createTurnamen(Map<String, dynamic> turnamenData) async {
     final docRef = await _firestore.collection('turnamen').add(_prepareData(turnamenData));
     turnamenData['id'] = docRef.id;
+    
+    // Sync to events collection
+    await _firestore.collection('events').doc(docRef.id).set({
+      'judul': turnamenData['nama'],
+      'kategori': 'Kejuaraan',
+      'tanggal_mulai': turnamenData['tanggal_mulai'],
+      'tanggal_selesai': turnamenData['tanggal_selesai'],
+      'lokasi': turnamenData['lokasi'],
+      'status': turnamenData['status'],
+      'deskripsi': turnamenData['deskripsi'] ?? '',
+      'poster_url': turnamenData['banner_url'] ?? '',
+    });
+    
     return Turnamen.fromJson(turnamenData);
   }
 
   Future<Turnamen> updateTurnamen(String id, Map<String, dynamic> turnamenData) async {
     await _firestore.collection('turnamen').doc(id).update(_prepareData(turnamenData));
     turnamenData['id'] = id;
+    
+    // Sync to events collection
+    await _firestore.collection('events').doc(id).set({
+      'judul': turnamenData['nama'],
+      'kategori': 'Kejuaraan',
+      'tanggal_mulai': turnamenData['tanggal_mulai'],
+      'tanggal_selesai': turnamenData['tanggal_selesai'],
+      'lokasi': turnamenData['lokasi'],
+      'status': turnamenData['status'],
+      'deskripsi': turnamenData['deskripsi'] ?? '',
+      'poster_url': turnamenData['banner_url'] ?? '',
+    }, SetOptions(merge: true));
+
     return Turnamen.fromJson(turnamenData);
   }
 
   Future<void> deleteTurnamen(String id) async {
     await _firestore.collection('turnamen').doc(id).delete();
+    // Also delete from events
+    try {
+      await _firestore.collection('events').doc(id).delete();
+    } catch (_) {}
   }
 
   // Piagam CRUD

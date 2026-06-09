@@ -330,11 +330,7 @@ class _TurnamenPageState extends State<TurnamenPage> {
                     ),
                   ),
                 ),
-                Text(
-                  'Tidak dapat melihat pratinjau file? (Ukuran mungkin terlalu besar)',
-                  style: TextStyle(color: context.colors.textMuted, fontSize: 13, fontStyle: FontStyle.italic),
-                ),
-                SizedBox(height: 8),
+                SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: () async {
                     if (lampiran.url.isNotEmpty) {

@@ -55,7 +55,7 @@ class _JadwalPageState extends State<JadwalPage> {
                   SizedBox(height: 24),
                   if (provider.isLoading)
                     const _LoadingIndicator()
-                  else
+                  else if (provider.pertandingan.isNotEmpty)
                     BaganPertandinganWidget(
                       pertandingan: provider.pertandingan,
                     ),
@@ -185,20 +185,7 @@ class _JadwalPageState extends State<JadwalPage> {
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: context.colors.surfaceElevated,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.broken_image,
-                      color: context.colors.textMuted,
-                      size: 40,
-                    ),
-                  ),
-                ),
+                errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
               ),
             ),
           ],

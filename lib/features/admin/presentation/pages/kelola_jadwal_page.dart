@@ -4,6 +4,7 @@ import '../../../../core/utils/date_formatter.dart';
 import '../../../../app/theme.dart';
 import '../../providers/admin_provider.dart';
 import '../widgets/data_table_widget.dart';
+import '../../../jadwal/data/models/event_model.dart';
 
 class KelolaJadwalPage extends StatefulWidget {
   const KelolaJadwalPage({super.key});
@@ -24,7 +25,6 @@ class _KelolaJadwalPageState extends State<KelolaJadwalPage> {
   void _showAddEventDialog() {
     final judulCtrl = TextEditingController();
     final kategoriCtrl = TextEditingController();
-    final tipeCtrl = TextEditingController(text: 'Event');
     final lokasiCtrl = TextEditingController();
     final deskripsiCtrl = TextEditingController();
     final posterUrlCtrl = TextEditingController();
@@ -52,11 +52,7 @@ class _KelolaJadwalPageState extends State<KelolaJadwalPage> {
                         decoration: const InputDecoration(hintText: 'Judul Event'),
                       ),
                       const SizedBox(height: 12),
-                      Row(children: [
-                        Expanded(child: TextField(controller: kategoriCtrl, style: TextStyle(color: ctx.colors.textPrimary), decoration: const InputDecoration(hintText: 'Kategori'))),
-                        const SizedBox(width: 12),
-                        Expanded(child: TextField(controller: tipeCtrl, style: TextStyle(color: ctx.colors.textPrimary), decoration: const InputDecoration(hintText: 'Tipe'))),
-                      ]),
+                      TextField(controller: kategoriCtrl, style: TextStyle(color: ctx.colors.textPrimary), decoration: const InputDecoration(hintText: 'Kategori')),
                       const SizedBox(height: 12),
                       Row(children: [
                         Expanded(
@@ -112,7 +108,6 @@ class _KelolaJadwalPageState extends State<KelolaJadwalPage> {
                     final data = {
                       'judul': judulCtrl.text.trim(),
                       'kategori': kategoriCtrl.text.trim(),
-                      'tipe': tipeCtrl.text.trim(),
                       'tanggal_mulai': tanggalMulai.toIso8601String(),
                       'tanggal_selesai': tanggalSelesai.toIso8601String(),
                       'lokasi': lokasiCtrl.text.trim(),
@@ -121,6 +116,112 @@ class _KelolaJadwalPageState extends State<KelolaJadwalPage> {
                       'poster_url': posterUrlCtrl.text.trim(),
                     };
                     ctx.read<AdminProvider>().createEvent(data);
+                    Navigator.pop(dialogContext);
+                  },
+                  child: const Text('Simpan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showEditEventDialog(Event event) {
+    final judulCtrl = TextEditingController(text: event.judul);
+    final kategoriCtrl = TextEditingController(text: event.kategori);
+    final lokasiCtrl = TextEditingController(text: event.lokasi);
+    final deskripsiCtrl = TextEditingController(text: event.deskripsi);
+    final posterUrlCtrl = TextEditingController(text: event.posterUrl ?? '');
+    String status = event.status;
+    DateTime tanggalMulai = event.tanggalMulai;
+    DateTime tanggalSelesai = event.tanggalSelesai;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              backgroundColor: ctx.colors.surfaceCard,
+              title: Text('Edit Event', style: TextStyle(color: ctx.colors.textPrimary)),
+              content: SizedBox(
+                width: 500,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: judulCtrl,
+                        style: TextStyle(color: ctx.colors.textPrimary),
+                        decoration: const InputDecoration(hintText: 'Judul Event'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(controller: kategoriCtrl, style: TextStyle(color: ctx.colors.textPrimary), decoration: const InputDecoration(hintText: 'Kategori')),
+                      const SizedBox(height: 12),
+                      Row(children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () async {
+                              final picked = await showDatePicker(context: ctx, initialDate: tanggalMulai, firstDate: DateTime(2020), lastDate: DateTime(2030));
+                              if (picked != null) setDialogState(() => tanggalMulai = picked);
+                            },
+                            child: InputDecorator(
+                              decoration: const InputDecoration(hintText: 'Tanggal Mulai'),
+                              child: Text(DateFormatter.shortDate(tanggalMulai), style: TextStyle(color: ctx.colors.textPrimary)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () async {
+                              final picked = await showDatePicker(context: ctx, initialDate: tanggalSelesai, firstDate: DateTime(2020), lastDate: DateTime(2030));
+                              if (picked != null) setDialogState(() => tanggalSelesai = picked);
+                            },
+                            child: InputDecorator(
+                              decoration: const InputDecoration(hintText: 'Tanggal Selesai'),
+                              child: Text(DateFormatter.shortDate(tanggalSelesai), style: TextStyle(color: ctx.colors.textPrimary)),
+                            ),
+                          ),
+                        ),
+                      ]),
+                      const SizedBox(height: 12),
+                      TextField(controller: lokasiCtrl, style: TextStyle(color: ctx.colors.textPrimary), decoration: const InputDecoration(hintText: 'Lokasi')),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        initialValue: status,
+                        dropdownColor: ctx.colors.surfaceCard,
+                        style: TextStyle(color: ctx.colors.textPrimary),
+                        decoration: const InputDecoration(hintText: 'Status'),
+                        items: ['upcoming', 'ongoing', 'completed'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                        onChanged: (v) => setDialogState(() => status = v!),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(controller: deskripsiCtrl, style: TextStyle(color: ctx.colors.textPrimary), decoration: const InputDecoration(hintText: 'Deskripsi'), maxLines: 3),
+                      const SizedBox(height: 12),
+                      TextField(controller: posterUrlCtrl, style: TextStyle(color: ctx.colors.textPrimary), decoration: const InputDecoration(hintText: 'Poster URL (opsional)')),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text('Batal', style: TextStyle(color: ctx.colors.textMuted))),
+                ElevatedButton(
+                  onPressed: () {
+                    if (judulCtrl.text.trim().isEmpty) return;
+                    final data = {
+                      'judul': judulCtrl.text.trim(),
+                      'kategori': kategoriCtrl.text.trim(),
+                      'tanggal_mulai': tanggalMulai.toIso8601String(),
+                      'tanggal_selesai': tanggalSelesai.toIso8601String(),
+                      'lokasi': lokasiCtrl.text.trim(),
+                      'status': status,
+                      'deskripsi': deskripsiCtrl.text.trim(),
+                      'poster_url': posterUrlCtrl.text.trim(),
+                    };
+                    ctx.read<AdminProvider>().updateEvent(event.id, data);
                     Navigator.pop(dialogContext);
                   },
                   child: const Text('Simpan'),
@@ -170,7 +271,25 @@ class _KelolaJadwalPageState extends State<KelolaJadwalPage> {
                 const SizedBox(height: 8),
                 Text('Manajemen data kalender kegiatan', style: TextStyle(color: context.colors.textSecondary, fontSize: 15)),
               ]),
-              ElevatedButton.icon(onPressed: _showAddEventDialog, icon: const Icon(Icons.add), label: const Text('Tambah Event')),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      // Trigger manual sync
+                      context.read<AdminProvider>().syncTurnamenToJadwal();
+                    },
+                    icon: const Icon(Icons.sync),
+                    tooltip: 'Sync Turnamen ke Jadwal',
+                    style: IconButton.styleFrom(
+                      backgroundColor: context.colors.primaryGold.withValues(alpha: 0.2),
+                      foregroundColor: context.colors.primaryGold,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(onPressed: _showAddEventDialog, icon: const Icon(Icons.add), label: const Text('Tambah Event')),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 32),
@@ -203,14 +322,15 @@ class _KelolaJadwalPageState extends State<KelolaJadwalPage> {
                 });
               }
 
-              final rows = provider.events.map((e) => [e.judul, DateFormatter.shortDate(e.tanggalMulai), DateFormatter.shortDate(e.tanggalSelesai), e.lokasi, e.tipe]).toList();
+              final rows = provider.events.map((e) => [e.judul, DateFormatter.shortDate(e.tanggalMulai), DateFormatter.shortDate(e.tanggalSelesai), e.lokasi]).toList();
               return AdminDataTable(
-                columns: ['Judul Event', 'Tgl Mulai', 'Tgl Selesai', 'Lokasi', 'Tipe'],
+                columns: ['Judul Event', 'Tgl Mulai', 'Tgl Selesai', 'Lokasi'],
                 rows: rows,
                 actionsBuilder: (index) {
                   final eventId = provider.events[index].id;
+                  final event = provider.events[index];
                   return [
-                    IconButton(icon: Icon(Icons.edit, color: context.colors.primaryGold, size: 18), onPressed: () {}, tooltip: 'Edit'),
+                    IconButton(icon: Icon(Icons.edit, color: context.colors.primaryGold, size: 18), onPressed: () => _showEditEventDialog(event), tooltip: 'Edit'),
                     IconButton(icon: Icon(Icons.delete, color: context.colors.errorRed, size: 18), onPressed: () => _showDeleteDialog(eventId), tooltip: 'Hapus'),
                   ];
                 },

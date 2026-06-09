@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import '../data/repositories/admin_repository.dart';
@@ -107,6 +108,24 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateEvent(String id, Map<String, dynamic> data) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final event = await _repository.updateEvent(id, data);
+      final index = _events.indexWhere((e) => e.id == id);
+      if (index != -1) {
+        _events[index] = event;
+      }
+      _successMessage = 'Event berhasil diperbarui';
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteEvent(String id) async {
     _isLoading = true;
     notifyListeners();
@@ -151,6 +170,24 @@ class AdminProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateTurnamen(String id, Map<String, dynamic> data) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final turnamen = await _repository.updateTurnamen(id, data);
+      final index = _turnamenList.indexWhere((t) => t.id == id);
+      if (index != -1) {
+        _turnamenList[index] = turnamen;
+      }
+      _successMessage = 'Turnamen berhasil diperbarui';
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteTurnamen(String id) async {
     _isLoading = true;
     notifyListeners();
@@ -158,6 +195,37 @@ class AdminProvider extends ChangeNotifier {
       await _repository.deleteTurnamen(id);
       _turnamenList.removeWhere((t) => t.id == id);
       _successMessage = 'Turnamen berhasil dihapus';
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> syncTurnamenToJadwal() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      final turnamens = await _repository.fetchTurnamen();
+      final firestore = _repository.firestore;
+      
+      for (var t in turnamens) {
+        await firestore.collection('events').doc(t.id).set({
+          'judul': t.nama,
+          'kategori': 'Kejuaraan',
+          'tanggal_mulai': t.tanggalMulai.toIso8601String(),
+          'tanggal_selesai': t.tanggalSelesai.toIso8601String(),
+          'lokasi': t.lokasi,
+          'status': t.status,
+          'deskripsi': t.deskripsi ?? '',
+          'poster_url': t.bannerUrl ?? '',
+        }, SetOptions(merge: true));
+      }
+      
+      await loadEvents();
+      _successMessage = 'Berhasil menyinkronkan data Turnamen ke Jadwal';
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -187,6 +255,24 @@ class AdminProvider extends ChangeNotifier {
       final piagam = await _repository.createPiagam(data);
       _piagamList.add(piagam);
       _successMessage = 'Piagam berhasil ditambahkan';
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updatePiagam(String id, Map<String, dynamic> data) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final piagam = await _repository.updatePiagam(id, data);
+      final index = _piagamList.indexWhere((p) => p.id == id);
+      if (index != -1) {
+        _piagamList[index] = piagam;
+      }
+      _successMessage = 'Piagam berhasil diperbarui';
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -230,7 +316,25 @@ class AdminProvider extends ChangeNotifier {
     try {
       final berita = await _repository.createBerita(data);
       _beritaList.add(berita);
-      _successMessage = 'Berita berhasil ditambahkan';
+      _successMessage = 'Berita berhasil dipublikasikan';
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateBerita(String id, Map<String, dynamic> data) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final berita = await _repository.updateBerita(id, data);
+      final index = _beritaList.indexWhere((b) => b.id == id);
+      if (index != -1) {
+        _beritaList[index] = berita;
+      }
+      _successMessage = 'Berita berhasil diperbarui';
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
