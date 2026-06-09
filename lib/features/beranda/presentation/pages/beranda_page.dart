@@ -96,7 +96,7 @@ class _BerandaPageState extends State<BerandaPage> {
   Widget _buildStatistikSection(BuildContext context, BerandaProvider provider) {
     final stats = provider.statistik;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 16),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 900),
@@ -104,16 +104,13 @@ class _BerandaPageState extends State<BerandaPage> {
             builder: (context, constraints) {
               final isWide = constraints.maxWidth > 600;
               final children = [
-                _buildStatCard(context, '${stats['events'] ?? 0}', 'Total Event', context.colors.primaryBlue),
-                _buildStatCard(context, '${stats['turnamen'] ?? 0}', 'Total Turnamen', const Color(0xFFD4AF37)),
-                _buildStatCard(context, '${stats['piagam'] ?? 0}', 'Piagam Terbit', context.colors.successGreen),
+                _buildStatCard(context, '${stats['events'] ?? 0}', 'Total Event', context.colors.primaryBlue, isWide),
+                _buildStatCard(context, '${stats['turnamen'] ?? 0}', 'Total Turnamen', const Color(0xFFD4AF37), isWide),
+                _buildStatCard(context, '${stats['piagam'] ?? 0}', 'Piagam Terbit', context.colors.successGreen, isWide),
               ];
-              if (isWide) {
-                return Row(
-                  children: children.map((c) => Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: c))).toList(),
-                );
-              }
-              return Column(children: children.map((c) => Padding(padding: const EdgeInsets.only(bottom: 12), child: c)).toList());
+              return Row(
+                children: children.map((c) => Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: isWide ? 8 : 4), child: c))).toList(),
+              );
             },
           ),
         ),
@@ -121,11 +118,11 @@ class _BerandaPageState extends State<BerandaPage> {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String value, String label, Color accentColor) {
+  Widget _buildStatCard(BuildContext context, String value, String label, Color accentColor, bool isWide) {
     return HoverScaleCard(
       scale: 1.03,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+        padding: EdgeInsets.symmetric(vertical: isWide ? 28 : 16, horizontal: isWide ? 24 : 8),
         decoration: BoxDecoration(
           color: context.colors.surfaceCard,
           borderRadius: BorderRadius.circular(10),
@@ -135,12 +132,13 @@ class _BerandaPageState extends State<BerandaPage> {
           children: [
             Text(
               value,
-              style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800, color: accentColor),
+              style: TextStyle(fontSize: isWide ? 36 : 24, fontWeight: FontWeight.w800, color: accentColor),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: isWide ? 6 : 4),
             Text(
               label,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: context.colors.textSecondary),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: isWide ? 14 : 11, fontWeight: FontWeight.w500, color: context.colors.textSecondary),
             ),
           ],
         ),

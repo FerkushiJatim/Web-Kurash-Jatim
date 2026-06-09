@@ -79,6 +79,7 @@ class AppNavbar extends StatelessWidget {
                 },
               ),
             ],
+            ),
           );
         },
       ),
